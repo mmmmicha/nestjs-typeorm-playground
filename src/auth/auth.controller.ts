@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { UserDTO } from './dto/user.dto';
@@ -12,7 +12,8 @@ export class AuthController {
     constructor(private authService: AuthService) {}
 
     @Post('/register')
-    registerNewUser(@Req() req: Request, @Body() userDTO: UserDTO): Promise<any> {
+    @UsePipes(ValidationPipe)
+    registerNewUser(@Body() userDTO: UserDTO): Promise<any> {
         return this.authService.registerNewUser(userDTO);
     }
 
