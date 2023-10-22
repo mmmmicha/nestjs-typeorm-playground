@@ -23,18 +23,17 @@ export class AuthService {
 
     async validateUser(user: UserDTO): Promise<{ accessToken: string } | undefined> {
         let existedUser = await this.userService.findByFields({ where : { username : user.username }});
-
         if (!existedUser) throw new UnauthorizedException();
 
         const isPasswordMatching = await bcrypt.compare(user.password, existedUser.password);
-
         if (!isPasswordMatching) throw new UnauthorizedException();
 
+        this.convertInAuthorities(existedUser);
         const payload: Payload = {
             username: existedUser.username,
             id: existedUser.id,
+            authorities: existedUser.authorities,
         };
-
 
         return {
             accessToken: this.jwtService.sign(payload),
@@ -42,6 +41,22 @@ export class AuthService {
     }
 
     async tokenValidateUser(payload: Payload): Promise<User | undefined> {
-        return await this.userService.findByFields({ where : { id : payload.id }});
+        let existedUser = await this.userService.findByFields({ where : { id : payload.id }});
+        this.flatAuthorities(existedUser);
+        return existedUser;
+    }
+
+    private convertInAuthorities(user: any): User {
+        if (user && user.authorities) {
+            user.authorities = user.authorities.map((authority: any) => { name: authority.authorityName });
+        }
+        return user;
+    }
+
+    private flatAuthorities(user: any): User {
+        if (user && user.authorities) {
+            user.authorities = user.authorities.map((authority: any) => authority.authorityName);
+        }
+        return user;
     }
 }
