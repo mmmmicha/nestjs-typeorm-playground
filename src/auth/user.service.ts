@@ -4,7 +4,7 @@ import { UserRepository } from "./repository/user.repository";
 import { FindOneOptions } from "typeorm";
 import { UserDTO } from "./dto/user.dto";
 import * as bcrypt from 'bcrypt';
-import { User } from "./entity/user.entity";
+import { User } from "../domain/user.entity";
 
 @Injectable()
 export class UserService {
