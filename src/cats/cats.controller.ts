@@ -1,10 +1,21 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { CatsService } from './cats.service';
 import { Cat } from '../domain/cats.entity';
+import { CreateCatsDTO } from './dto/createCats.dto';
 
 @Controller('cats')
 export class CatsController {
     constructor(private readonly catsService: CatsService){}
+
+    @Get('/mongoose')
+    findAllMongoose(): Promise<any> {
+        return this.catsService.findAllMongoose();
+    }
+
+    @Post('/mongoose')
+    createMongoose(@Body() createCatsDTO: CreateCatsDTO): Promise<any> {
+        return this.catsService.createMongoose(createCatsDTO)
+    }
 
     @Get()
     findAll(): Promise<Cat[]> {

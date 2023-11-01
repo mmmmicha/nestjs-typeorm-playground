@@ -2,14 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cat } from '../domain/cats.entity';
 import { Repository } from 'typeorm';
+import { InjectModel } from '@nestjs/mongoose';
+import { Cats } from './model/cats.model';
+import { Model } from 'mongoose';
+import { CreateCatsDTO } from './dto/createCats.dto';
 
 @Injectable()
 export class CatsService {
     constructor(
-        @InjectRepository(Cat)
-        private readonly catsRepository: Repository<Cat>,
+        @InjectRepository(Cat) private readonly catsRepository: Repository<Cat>,
+        @InjectModel(Cats.name) private readonly catsModel: Model<Cats>
     ) {}
     
+    findAllMongoose(): Promise<any> {
+        return this.catsModel.find();
+    }
+
+    createMongoose(createCatsDTO: CreateCatsDTO): Promise<any> {
+        const newCat = new this.catsModel(createCatsDTO);
+        return newCat.save();
+
+    }
+
     findAll(): Promise<Cat[]> {
         return this.catsRepository.find();
     }
