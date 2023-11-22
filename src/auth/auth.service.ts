@@ -1,28 +1,29 @@
 import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserDTO } from './dto/user.dto';
+import { LoginDTO } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { Payload } from './security/payload.interface';
 import { User } from '../domain/user.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserRepository } from 'src/repository/user.repository';
 
 @Injectable()
 export class AuthService {
     constructor(
-        private userService: UserService,
+        @InjectRepository(UserRepository) private readonly userRepository: UserRepository,
         private jwtService: JwtService
     ) {}
 
-    async registerNewUser(userDTO: UserDTO): Promise<UserDTO | undefined> {
-        let existedUser = await this.userService.findByFields({ where : { username : userDTO.username }});
+    async registerNewUser(loginDTO: LoginDTO): Promise<LoginDTO | undefined> {
+        let existedUser = await this.userRepository.findOne({ where : { username : loginDTO.username }});
         if (existedUser) {
             throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
         }
-        return await this.userService.save(userDTO);
+        return await this.userRepository.save(loginDTO);
     }
 
-    async validateUser(user: UserDTO): Promise<{ accessToken: string } | undefined> {
-        let existedUser = await this.userService.findByFields({ where : { username : user.username }});
+    async validateUser(user: LoginDTO): Promise<{ accessToken: string } | undefined> {
+        let existedUser = await this.userRepository.findOne({ where : { username : user.username }});
         if (!existedUser) throw new UnauthorizedException();
 
         const isPasswordMatching = await bcrypt.compare(user.password, existedUser.password);
@@ -41,7 +42,7 @@ export class AuthService {
     }
 
     async tokenValidateUser(payload: Payload): Promise<User | undefined> {
-        let existedUser = await this.userService.findByFields({ where : { id : payload.id }});
+        let existedUser = await this.userRepository.findOne({ where : { id : payload.id }});
         this.flatAuthorities(existedUser);
         return existedUser;
     }

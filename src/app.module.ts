@@ -8,6 +8,7 @@ import { ormConfig } from './orm.config';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import config from './config/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UserModule } from './user/user.module';
 
 @Module({
     imports: [
@@ -24,7 +25,8 @@ import { MongooseModule } from '@nestjs/mongoose';
         }),
         TypeOrmModule.forRootAsync({ useFactory: ormConfig }),
         CatsModule,
-        AuthModule
+        AuthModule,
+        UserModule
     ],
     controllers: [AppController],
     providers: [AppService],

@@ -2,12 +2,11 @@ import { Module } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserRepository } from './repository/user.repository';
-import { UserService } from './user.service';
+import { UserRepository } from '../repository/user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './security/passport.jwt.strategy';
-import { UserAuthorityRepository } from './repository/user-authority.repository';
+import { UserAuthorityRepository } from '../repository/user-authority.repository';
 
 @Module({
     imports: [
@@ -15,12 +14,12 @@ import { UserAuthorityRepository } from './repository/user-authority.repository'
         JwtModule.register({
             secret: 'secret',
             // 30 minutes
-            signOptions: { expiresIn: 1800 },
+            signOptions: { expiresIn: '30m' },
         }),
         PassportModule
       ],
     exports: [TypeOrmModule],
     controllers: [AuthController],
-    providers: [AuthService, UserService, UserRepository, UserAuthorityRepository, JwtStrategy]
+    providers: [AuthService, UserRepository, UserAuthorityRepository, JwtStrategy]
 })
 export class AuthModule {}
