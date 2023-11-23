@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDTO } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { Payload } from './security/payload.interface';
@@ -14,26 +14,18 @@ export class AuthService {
         private jwtService: JwtService
     ) {}
 
-    async registerNewUser(loginDTO: LoginDTO): Promise<LoginDTO | undefined> {
-        let existedUser = await this.userRepository.findOne({ where : { username : loginDTO.username }});
-        if (existedUser) {
-            throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
-        }
-        return await this.userRepository.save(loginDTO);
-    }
-
     async validateUser(user: LoginDTO): Promise<{ accessToken: string } | undefined> {
         let existedUser = await this.userRepository.findOne({ where : { username : user.username }});
-        if (!existedUser) throw new UnauthorizedException();
+        if (!existedUser) throw new UnauthorizedException('user not found');
 
         const isPasswordMatching = await bcrypt.compare(user.password, existedUser.password);
-        if (!isPasswordMatching) throw new UnauthorizedException();
+        if (!isPasswordMatching) throw new UnauthorizedException('wrong password');
 
-        this.convertInAuthorities(existedUser);
+        this.convertInRoles(existedUser);
         const payload: Payload = {
             username: existedUser.username,
             id: existedUser.id,
-            authorities: existedUser.authorities,
+            roles: existedUser.roles,
         };
 
         return {
@@ -43,20 +35,20 @@ export class AuthService {
 
     async tokenValidateUser(payload: Payload): Promise<User | undefined> {
         let existedUser = await this.userRepository.findOne({ where : { id : payload.id }});
-        this.flatAuthorities(existedUser);
+        this.flatRoles(existedUser);
         return existedUser;
     }
 
-    private convertInAuthorities(user: any): User {
-        if (user && user.authorities) {
-            user.authorities = user.authorities.map((authority: any) => { name: authority.authorityName });
+    private convertInRoles(user: any): User {
+        if (user && user.roles) {
+            user.roles = user.roles.map((role: any) => { name: role.roleName });
         }
         return user;
     }
 
-    private flatAuthorities(user: any): User {
-        if (user && user.authorities) {
-            user.authorities = user.authorities.map((authority: any) => authority.authorityName);
+    private flatRoles(user: any): User {
+        if (user && user.roles) {
+            user.roles = user.roles.map((role: any) => role.roleName);
         }
         return user;
     }

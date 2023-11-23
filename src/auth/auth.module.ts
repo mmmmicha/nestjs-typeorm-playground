@@ -6,11 +6,11 @@ import { UserRepository } from '../repository/user.repository';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './security/passport.jwt.strategy';
-import { UserAuthorityRepository } from '../repository/user-authority.repository';
+import { RoleRepository } from '../repository/role.repository';
 
 @Module({
     imports: [
-        TypeOrmModule.forFeature([UserRepository, UserAuthorityRepository]),
+        TypeOrmModule.forFeature([UserRepository, RoleRepository]),
         JwtModule.register({
             secret: 'secret',
             // 30 minutes
@@ -20,6 +20,6 @@ import { UserAuthorityRepository } from '../repository/user-authority.repository
       ],
     exports: [TypeOrmModule],
     controllers: [AuthController],
-    providers: [AuthService, UserRepository, UserAuthorityRepository, JwtStrategy]
+    providers: [AuthService, UserRepository, RoleRepository, JwtStrategy]
 })
 export class AuthModule {}

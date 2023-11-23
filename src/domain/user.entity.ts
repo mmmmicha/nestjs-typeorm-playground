@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { UserAuthority } from "./user-authority.entity";
+import { Role } from "./role.entity";
 
-@Entity('user')
+@Entity('tb_user')
 export class User{
     @PrimaryGeneratedColumn()
     id: number;
@@ -12,6 +12,6 @@ export class User{
     @Column()
     password: string;
 
-    @OneToMany(type => UserAuthority, userAuthority => userAuthority.user, { eager: true })
-    authorities?: any[];
+    @OneToMany(type => Role, role => role.user, { eager: true })
+    roles?: any[];
 }
