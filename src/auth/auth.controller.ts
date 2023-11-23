@@ -1,11 +1,8 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Body, Controller, Post, Res, UseGuards, } from '@nestjs/common';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { AuthGuard } from './security/auth.guard';
-import { RolesGuard } from './security/roles.guard';
-import { Roles } from './decorator/role.decorator';
-import { RoleType } from './role-type';
 
 @Controller('auth')
 export class AuthController {
@@ -24,27 +21,9 @@ export class AuthController {
         });
     }
 
-    @Get('/authenticate')
-    @UseGuards(AuthGuard)
-    async authenticate(@Req() req: Request): Promise<any> {
-        return req.user;
-    }
-
-    @Get('/admin-role')
-    @UseGuards(AuthGuard, RolesGuard)
-    @Roles(RoleType.ADMIN)
-    adminRoles(@Req() req: Request): any {
-        return req.user;
-    }
-
-    @Get('/cookies')
-    getCookies(@Req() req: Request, @Res() res: Response): any {
-        const jwt = req.cookies['jwt']
-        return res.send(jwt);
-    }
-
     @Post('/logout')
-    logout(@Res() res: Response): any {
+    @UseGuards(AuthGuard)
+    async logout(@Res() res: Response): Promise<any> {
         res.cookie('jwt', '', {
             maxAge: 0
         });

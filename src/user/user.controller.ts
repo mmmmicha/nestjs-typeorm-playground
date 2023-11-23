@@ -1,7 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Post, UsePipes, ValidationPipe, Body } from '@nestjs/common'
 import { PostUserDTO } from './dto/postUser.dto';
+import { Response } from 'express';
 
 @Controller('user')
 export class UserController {
@@ -9,7 +10,8 @@ export class UserController {
 
     @Post()
     @UsePipes(ValidationPipe)
-    registerNewUser(@Body() userDTO: PostUserDTO): Promise<any> {
-        return this.userService.register(userDTO);
+    async registerNewUser(@Body() userDTO: PostUserDTO, @Res() res: Response): Promise<any> {
+        const payload = await this.userService.register(userDTO);
+        return res.send({ msg: 'ok', payload: payload});
     }
 }
