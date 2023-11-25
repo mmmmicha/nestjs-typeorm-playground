@@ -1,2 +1,4 @@
 server:
   port: 3001
+access_token_secret: 'test1234'
+refresh_token_secret: 'test1234'

@@ -12,6 +12,6 @@ export class UserController {
     @UsePipes(ValidationPipe)
     async registerNewUser(@Body() userDTO: PostUserDTO, @Res() res: Response): Promise<any> {
         const payload = await this.userService.register(userDTO);
-        return res.send({ msg: 'ok', payload: payload});
+        return res.send({ message: 'ok', payload: payload});
     }
 }

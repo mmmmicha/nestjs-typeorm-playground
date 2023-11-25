@@ -10,25 +10,15 @@ export class AuthController {
 
     @Post('/login')
     async login(@Body() loginDTO: LoginDTO, @Res() res: Response): Promise<any> {
-        const jwt = await this.authService.validateUser(loginDTO);
-        res.header('Authorization', 'Bearer ' + jwt.accessToken);
-        res.cookie('jwt', jwt.accessToken, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000
-        })
-        return res.send({
-            message: 'success'
-        });
+        const tokenPair = await this.authService.validateUser(loginDTO);
+        res.cookie('accessToken', tokenPair.accessToken, { httpOnly: true });
+        return res.send({ message: 'ok', payload: { accessToken: tokenPair.accessToken } });
     }
 
     @Post('/logout')
     @UseGuards(AuthGuard)
     async logout(@Res() res: Response): Promise<any> {
-        res.cookie('jwt', '', {
-            maxAge: 0
-        });
-        return res.send({
-            message: 'success'
-        });
+        res.cookie('accessToken', '', { httpOnly: true });
+        return res.send({ message: 'ok' });
     }
 }
