@@ -1,9 +1,9 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class PutCatDTO {
     @IsString()
-    @Min(1)
-    @Max(20)
+    @MinLength(1)
+    @MaxLength(20)
     @IsOptional()
     name: string;
 

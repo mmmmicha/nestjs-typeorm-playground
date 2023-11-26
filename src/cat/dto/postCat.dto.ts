@@ -1,10 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString, Max, Min } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsString, MaxLength, Min, MinLength } from "class-validator";
 
 export class PostCatDTO {
     @IsString()
     @IsNotEmpty()
-    @Min(1)
-    @Max(20)
+    @MinLength(1)
+    @MaxLength(20)
     name: string;
 
     @IsNumber()
