@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cat } from '../domain/cat.entity';
-import { Repository } from 'typeorm';
 import { PostCatDTO } from './dto/postCat.dto';
 import { PutCatDTO } from './dto/putCat.dto';
+import { CatRepository } from 'src/repository/cat.repository';
 
 @Injectable()
 export class CatService {
     constructor(
-        @InjectRepository(Cat) private readonly catRepository: Repository<Cat>
+        @InjectRepository(CatRepository) private readonly catRepository: CatRepository
     ) {}
 
     async findAll(): Promise<Cat[]> {
