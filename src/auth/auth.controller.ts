@@ -12,7 +12,8 @@ export class AuthController {
     async login(@Body() loginDTO: LoginDTO, @Res() res: Response): Promise<any> {
         const tokenPair = await this.authService.validateUser(loginDTO);
         res.cookie('accessToken', tokenPair.accessToken, { httpOnly: true });
-        return res.send({ message: 'ok', payload: { accessToken: tokenPair.accessToken } });
+        res.cookie('refreshToken', tokenPair.refreshToken, { httpOnly: true });
+        return res.send({ message: 'ok', payload: { accessToken: tokenPair.accessToken, refreshToken: tokenPair.refreshToken } });
     }
 
     @Post('/logout')

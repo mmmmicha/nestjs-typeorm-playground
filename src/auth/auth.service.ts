@@ -16,7 +16,7 @@ export class AuthService {
         private readonly configService: ConfigService,
     ) {}
 
-    async validateUser(user: LoginDTO): Promise<{ accessToken: string } | undefined> {
+    async validateUser(user: LoginDTO): Promise<{ accessToken: string, refreshToken: string } | undefined> {
         let existedUser = await this.userRepository.findOne({ where : { username : user.username }});
         if (!existedUser) throw new UnauthorizedException('user not found');
 
@@ -31,9 +31,11 @@ export class AuthService {
         };
 
         const accessToken = await this.createAccessToken(payload);
+        const refreshToken = await this.createRefreshToken(payload);
 
         return {
             accessToken: accessToken,
+            refreshToken: refreshToken
         };
     }
 
@@ -44,6 +46,15 @@ export class AuthService {
         });
 
         return accesshToken;
+    }
+
+    private async createRefreshToken(payload: Payload): Promise<string> {
+        const refreshToken = this.jwtService.sign(payload, {
+            secret: this.configService.get<string>('refresh_token_secret'),
+            expiresIn: "30d",
+        });
+
+        return refreshToken;
     }
 
     async tokenValidateUser(payload: Payload): Promise<User | undefined> {
